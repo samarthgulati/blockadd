@@ -1,0 +1,7 @@
+line {
+  stroke: lightgrey;
+}
+
+.ew-resize:hover {
+  cursor: ew-resize;
+}
