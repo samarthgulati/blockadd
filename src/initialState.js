@@ -1,6 +1,9 @@
 export default {
   canvas: {
-    editIndex: null,
-    blocks: []
+    editIndices: {
+      gIdx: null,
+      bIdx: null
+    },
+    groups: []
   }
 }

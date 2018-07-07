@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { createBlock, toggleEdit, resizeBlock } from './actions/blockActions'
 
 import Grid from './Grid';
-import Block from './Block';
+import Group from './Group';
 import './App.css';
 
 class App extends Component {
   createBlock = (event) => {
-    const blockCount = this.props.canvas.blocks.length
-    if(blockCount !== 0 && this.props.canvas.editIndex !== null) return
+    const blockCount = this.props.canvas.groups.length
+    if(blockCount !== 0 && this.props.canvas.editIndices.gIdx !== null) return
     event.persist()
     const payload = {
       x: event.clientX,
@@ -17,19 +17,19 @@ class App extends Component {
     }
     this.props.createBlock(payload)
   }
-  toggleEdit = (event, idx) => {
-    // const blockCount = this.props.canvas.blocks.length
+  toggleEdit = (event, gIdx, bIdx) => {
+    // const blockCount = this.props.canvas.groups.length
     // if(blockCount === 0) return
-    if(this.props.canvas.editIndex === null && isNaN(idx)) return
+    if(this.props.canvas.editIndices.gIdx === null && isNaN(gIdx) && isNaN(bIdx)) return
     event.stopPropagation()
     const payload = {
-      idx
+      gIdx, bIdx
     }
     this.props.toggleEdit(payload)
   }
   resizeBlock = (event) => {
-    const blockCount = this.props.canvas.blocks.length
-    if(blockCount === 0 || this.props.canvas.editIndex === null) return
+    const blockCount = this.props.canvas.groups.length
+    if(blockCount === 0 || this.props.canvas.editIndices.gIdx === null) return
     event.persist()
     event.stopPropagation()
     const payload = {
@@ -46,16 +46,17 @@ class App extends Component {
           onMouseMove={this.resizeBlock}
           onMouseUp={this.toggleEdit}>
           <Grid/>
-          {this.props.canvas.blocks.map((block, i) => 
-            <Block 
+          {this.props.canvas.groups.map((group, i) => 
+          <Group 
               key={i}
-              idx={i}
-              x={block.x} 
-              y={block.y} 
+              gIdx={i}
+              x={group.x} 
+              y={group.y} 
+              blocks={group.blocks}
               toggleEdit={this.toggleEdit}
-              width={block.width} 
-              height={block.height} 
-              fill={block.fill}/>)
+              width={group.width} 
+              height={group.height} 
+              fill={group.fill}/>)
           }
       </svg>
     );
