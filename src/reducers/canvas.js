@@ -10,7 +10,9 @@ const newGroup = (group, blocks) => {
 	const newGroupObj = blocks.reduce((newGroupObj, block, i)=>{
 		if(i === 0) {
 			const {xCoord, x, x2Coord, x2, yCoord, y} = block
-			return {xCoord, x, x2Coord, x2, yCoord, y}
+			const total = parseInt(x2Coord - xCoord)
+			const math = total.toFixed()
+			return {xCoord, x, x2Coord, x2, yCoord, y, math, total}
 		}
 		newGroupObj.xCoord = Math.min(newGroupObj.xCoord, block.xCoord)
 		newGroupObj.x = Math.min(newGroupObj.x, block.x)
@@ -18,6 +20,8 @@ const newGroup = (group, blocks) => {
 		newGroupObj.x2 = Math.max(newGroupObj.x2, block.x2)
 		newGroupObj.yCoord = Math.min(newGroupObj.yCoord, block.yCoord)
 		newGroupObj.y = Math.min(newGroupObj.y, block.y)
+		newGroupObj.total += parseInt(block.x2Coord - block.xCoord)
+		newGroupObj.math += ` + ${(block.x2Coord - block.xCoord).toFixed()}`
 		return newGroupObj
 	}, {})
 	newGroupObj.blocks = blocks
@@ -45,12 +49,11 @@ export default (state = initialState.canvas, action) => {
 			if(gIdx > -1) {
 				const blocks = [...state.groups[gIdx].blocks, block] 
 				const bIdx = blocks.length - 1
-				const group = newGroup(state.groups[gIdx], blocks)
 				return {
 					editIndices: { gIdx, bIdx },
 					groups: state.groups.map((grp,i) => {
 						if(i !== gIdx) return grp
-						return group
+						return newGroup(state.groups[gIdx], blocks)
 					})
 				}
 			} else {

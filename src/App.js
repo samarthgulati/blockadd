@@ -56,6 +56,9 @@ class App extends Component {
               toggleEdit={this.toggleEdit}
               width={group.width} 
               height={group.height} 
+              type={group.type} 
+              math={group.math} 
+              total={group.total} 
               fill={group.fill}/>)
           }
       </svg>
