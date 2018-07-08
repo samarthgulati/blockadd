@@ -34,9 +34,12 @@ export default (state = initialState.canvas, action) => {
 	switch (action.type) {
 		case 'CREATE_BLOCK': {
 			const yCoord = Math.floor(action.payload.y / window.delta)
-			const y = yCoord * window.delta
-			const occupied = state.groups.find(g => y >= g.y && y < g.y + g.height)
+			const occupied = state.groups.find(g => 
+				(yCoord >= g.yCoord) && 
+				(yCoord < g.yCoord + g.blocks.length)
+			)
 			if(occupied !== undefined) return state
+			const y = yCoord * window.delta
 			const xCoord = Math.floor(action.payload.x / window.delta)
 			const x = xCoord * window.delta
 			const x2Coord = xCoord + 1
