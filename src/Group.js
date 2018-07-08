@@ -26,6 +26,7 @@ export default function Group(props) {
       bIdx={i}
       x={block.x} 
       y={block.y} 
+      type={props.type}
       toggleEdit={props.toggleEdit}
       width={block.width} 
       height={block.height} 

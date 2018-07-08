@@ -2,7 +2,7 @@ import React from 'react'
 import './Button.css'
 
 export default function Button(props) {
-  const classes = 'button ' + `${props.selected ? 'selected' : ''}`
+  const classes = `button ${props.selected ? 'selected' : ''}`
   return (<g className={classes}
     onMouseDown={e => e.stopPropagation()}
     onClick={_ => {props.handleClick(props.value)}}>
