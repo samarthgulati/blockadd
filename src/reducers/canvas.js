@@ -44,10 +44,10 @@ export default (state = initialState.canvas, action) => {
 			const y = yCoord * window.delta
 			const xCoord = Math.floor(action.payload.x / window.delta)
 			const x = xCoord * window.delta
-			const x2Coord = xCoord + 1
+			const x2Coord = xCoord + 2
 			const x2 = x2Coord * window.delta
 			const fill = getRandomColor()
-			const width = window.delta
+			const width = 2 * window.delta
 			const height = window.delta
 			const block = {xCoord, x, x2Coord, x2, yCoord, y, width, height, fill}
 			const gIdx = findGroupIdx(state.groups, block)
@@ -63,8 +63,10 @@ export default (state = initialState.canvas, action) => {
 				}
 			} else {
 				const type = '+'
+				const total = 2
+				const math = 2
 				const blocks  = [block]
-				const group = {xCoord, x, x2Coord, x2, yCoord, y, width, height, blocks, type}
+				const group = {xCoord, x, x2Coord, x2, yCoord, y, width, height, blocks, type, total, math}
 				return {
 					editProps: {
 						gIdx: state.groups.length,
