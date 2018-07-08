@@ -1,0 +1,20 @@
+text {
+  user-select: none;
+}
+.button:hover {
+  cursor: pointer;
+}
+
+.button > rect {
+  fill: white;
+  stroke: black;
+}
+
+.button.selected > rect,
+.button:hover > rect {
+  fill: lightblue;
+}
+
+.button:active > rect {
+  fill: cornflowerblue;
+}

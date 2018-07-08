@@ -18,3 +18,10 @@ export const resizeBlock = (payload) => dispatch => {
 		payload
 	})
 }
+
+export const changeOperator = (payload) => dispatch => {
+	dispatch({
+		type: 'CHANGE_OPERATOR',
+		payload
+	})
+}

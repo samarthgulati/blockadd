@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { createBlock, toggleEdit, resizeBlock } from './actions/blockActions'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { createBlock, toggleEdit, resizeBlock, changeOperator } from './actions/blockActions'
 
-import Grid from './Grid';
-import Group from './Group';
-import './App.css';
+import Grid from './Grid'
+import Group from './Group'
+import './App.css'
 
 class App extends Component {
   createBlock = (event) => {
@@ -38,9 +38,11 @@ class App extends Component {
     }
     this.props.resizeBlock(payload)
   }
+  handleTypeChange = (gIdx, type) => {
+    this.props.changeOperator({gIdx, type})
+  }
   render() {
-    return (
-      <svg viewBox={`0 0 ${window.side} ${window.side}`} 
+    return (<svg viewBox={`0 0 ${window.side} ${window.side}`} 
           width={window.side} height={window.side}
           onMouseDown={this.createBlock}
           onMouseMove={this.resizeBlock}
@@ -54,6 +56,7 @@ class App extends Component {
               y={group.y} 
               blocks={group.blocks}
               toggleEdit={this.toggleEdit}
+              handleChange={val => this.handleTypeChange(i, val)}
               width={group.width} 
               height={group.height} 
               type={group.type} 
@@ -61,8 +64,7 @@ class App extends Component {
               total={group.total} 
               fill={group.fill}/>)
           }
-      </svg>
-    );
+      </svg>);
   }
 }
 const mapStateToProps = state => ({
@@ -71,6 +73,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   createBlock: (payload) => dispatch(createBlock(payload)),
   toggleEdit: (payload) => dispatch(toggleEdit(payload)),
-  resizeBlock: (payload) => dispatch(resizeBlock(payload))
+  resizeBlock: (payload) => dispatch(resizeBlock(payload)),
+  changeOperator: (payload) => dispatch(changeOperator(payload))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(App);

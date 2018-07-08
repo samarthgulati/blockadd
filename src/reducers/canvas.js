@@ -34,9 +34,9 @@ export default (state = initialState.canvas, action) => {
 	switch (action.type) {
 		case 'CREATE_BLOCK': {
 			const yCoord = Math.floor(action.payload.y / window.delta)
-			const occupied = state.groups.find(b => b.yCoord === yCoord)
-			if(occupied !== undefined) return state
 			const y = yCoord * window.delta
+			const occupied = state.groups.find(g => y >= g.y && y < g.y + g.height)
+			if(occupied !== undefined) return state
 			const xCoord = Math.floor(action.payload.x / window.delta)
 			const x = xCoord * window.delta
 			const x2Coord = xCoord + 1
@@ -101,6 +101,50 @@ export default (state = initialState.canvas, action) => {
 						}
 					})
 					return newGroup(group, blocks)
+				})
+			}
+		}
+		case 'CHANGE_OPERATOR': {
+			return {
+				...state,
+				groups: state.groups.map((group, i) => {
+					if (i !== action.payload.gIdx) return group
+					const type = action.payload.type
+					const {x, xCoord, y, yCoord, height, fill} = group.blocks[0]
+					let {width, x2, x2Coord} = group.blocks[0]
+					const w = Math.floor(x2Coord - xCoord)
+					let count, total, math
+					switch(type) {
+						case '+':
+							count = Math.ceil(group.total / w)
+							total = count * w
+							math = Array(count).fill(w).join(` ${type} `)
+						break
+						case 'x': 
+							count = Math.ceil(group.total / w)
+							total = count * w
+							math = `${w} ${type} ${count}`
+						break
+						case '2':
+							count = Math.ceil(Math.sqrt(group.total))
+							x2Coord = xCoord + count
+							width = count * window.delta
+							x2 = x + width
+							total = count * count
+							math = `${count} ^ ${type}`
+						break
+					}
+
+					const blocks = [...Array(count)].map((b,i) => ({
+						x, xCoord, x2, x2Coord, width, fill, height,
+						y: y + (i * window.delta),
+						yCoord: yCoord + i
+					}))
+					return {
+						x, xCoord, x2, x2Coord, y, yCoord, width,
+						blocks, total, type, math,
+						height: height * count
+					}
 				})
 			}
 		}
