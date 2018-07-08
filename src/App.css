@@ -2,6 +2,14 @@ line {
   stroke: lightgrey;
 }
 
+text {
+  font-family: monospace;
+}
+
 .ew-resize:hover {
   cursor: ew-resize;
+}
+
+.ns-resize:hover {
+  cursor: ns-resize;
 }

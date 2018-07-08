@@ -4,12 +4,16 @@ import VPill from './VPill'
 export default function Block(props) {
   if(props.type === '+' || props.bIdx === 0) {
     return (<g>
-      <rect 
-        x={props.x} 
+      {[...Array(props.w)].map((r,i)=>(
+        <rect 
+        stroke="rgba(255,255,255,0.5)"
+        key={i}
+        x={props.x + i * props.height} 
         y={props.y} 
-        width={props.width} 
+        width={props.height} 
         height={props.height} 
         fill={props.fill}/>
+      ))}
       <VPill strokeWidth={8}/>
       <use href="#vpill"
           className="ew-resize" 
@@ -28,12 +32,16 @@ export default function Block(props) {
     </g>) 
   } else {
     return (<g>
-      <rect 
-        x={props.x} 
+      {[...Array(props.w)].map((r,i)=>(
+        <rect 
+        stroke="rgba(255,255,255,0.5)"
+        key={i}
+        x={props.x + i * props.height} 
         y={props.y} 
-        width={props.width} 
+        width={props.height} 
         height={props.height} 
         fill={props.fill}/>
+      ))}
     </g>)
   }
     

@@ -1,6 +1,7 @@
 import React from 'react'
 import Block from './Block'
 import Picker from './Picker'
+import HPill from './HPill'
 const operations = [{
     value: '+',
     text: 'Add'
@@ -29,9 +30,19 @@ export default function Group(props) {
       type={props.type}
       toggleEdit={props.toggleEdit}
       width={block.width} 
+      w={block.x2Coord - block.xCoord}
       height={block.height} 
       fill={block.fill}/>)
     )}
+    <HPill strokeWidth={8}/>
+    <use href="#hpill"
+        style={{display: props.type === '+' ? 'none' : 'initial'}}
+        className="ns-resize" 
+        onMouseDown={e => props.toggleEdit(e, props.gIdx, 0, true)}
+        x={props.x + (props.width - window.delta * 0.85) * 0.5}
+        y={props.y + props.height - window.delta * 0.25}
+        width={window.delta * 0.85} 
+        height={window.delta * 0.5}/>
     <text 
       textAnchor="middle"
       alignmentBaseline="middle"

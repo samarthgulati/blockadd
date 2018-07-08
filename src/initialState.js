@@ -1,8 +1,9 @@
 export default {
   canvas: {
-    editIndices: {
+    editProps: {
       gIdx: null,
-      bIdx: null
+      bIdx: null,
+      vertical: false
     },
     groups: []
   }

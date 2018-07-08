@@ -9,7 +9,7 @@ import './App.css'
 class App extends Component {
   createBlock = (event) => {
     const blockCount = this.props.canvas.groups.length
-    if(blockCount !== 0 && this.props.canvas.editIndices.gIdx !== null) return
+    if(blockCount !== 0 && this.props.canvas.editProps.gIdx !== null) return
     event.persist()
     const payload = {
       x: event.clientX,
@@ -17,19 +17,17 @@ class App extends Component {
     }
     this.props.createBlock(payload)
   }
-  toggleEdit = (event, gIdx, bIdx) => {
-    // const blockCount = this.props.canvas.groups.length
-    // if(blockCount === 0) return
-    if(this.props.canvas.editIndices.gIdx === null && isNaN(gIdx) && isNaN(bIdx)) return
+  toggleEdit = (event, gIdx, bIdx, vertical = false) => {
+    if(this.props.canvas.editProps.gIdx === null && isNaN(gIdx) && isNaN(bIdx)) return
     event.stopPropagation()
     const payload = {
-      gIdx, bIdx
+      gIdx, bIdx, vertical
     }
     this.props.toggleEdit(payload)
   }
   resizeBlock = (event) => {
     const blockCount = this.props.canvas.groups.length
-    if(blockCount === 0 || this.props.canvas.editIndices.gIdx === null) return
+    if(blockCount === 0 || this.props.canvas.editProps.gIdx === null) return
     event.persist()
     event.stopPropagation()
     const payload = {

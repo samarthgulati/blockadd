@@ -1,4 +1,6 @@
 import initialState from '../initialState'
+// hue = 360 / 12
+const getRandomColor = _ => `hsl(${Math.floor(Math.random() * 12) * 30}, 100%, 50%)`
 const findGroupIdx = (groups, block) => {
 	return groups.findIndex(group => 
 		(block.y > group.y) && (block.y <= group.y + group.height) &&
@@ -44,7 +46,7 @@ export default (state = initialState.canvas, action) => {
 			const x = xCoord * window.delta
 			const x2Coord = xCoord + 1
 			const x2 = x2Coord * window.delta
-			const fill = `hsl(${Math.floor(Math.random() * 12) * 30}, 100%, 50%)` // hue = 360 / 12
+			const fill = getRandomColor()
 			const width = window.delta
 			const height = window.delta
 			const block = {xCoord, x, x2Coord, x2, yCoord, y, width, height, fill}
@@ -53,7 +55,7 @@ export default (state = initialState.canvas, action) => {
 				const blocks = [...state.groups[gIdx].blocks, block] 
 				const bIdx = blocks.length - 1
 				return {
-					editIndices: { gIdx, bIdx },
+					editProps: { gIdx, bIdx, vertical: false },
 					groups: state.groups.map((grp,i) => {
 						if(i !== gIdx) return grp
 						return newGroup(state.groups[gIdx], blocks)
@@ -64,32 +66,34 @@ export default (state = initialState.canvas, action) => {
 				const blocks  = [block]
 				const group = {xCoord, x, x2Coord, x2, yCoord, y, width, height, blocks, type}
 				return {
-					editIndices: {
+					editProps: {
 						gIdx: state.groups.length,
-						bIdx: 0
+						bIdx: 0, vertical: false
 					},
 					groups: [...state.groups, group]
 				}
 			}
 		}
 		case 'TOGGLE_EDIT':
-			const editIndices = {
+			const editProps = {
 				gIdx: null,
-				bIdx: null
+				bIdx: null,
+				vertical: false
 			}
-			if(state.editIndices.gIdx === null) {
-				editIndices.gIdx = action.payload.gIdx
-				editIndices.bIdx = action.payload.bIdx
+			if(state.editProps.gIdx === null) {
+				editProps.gIdx = action.payload.gIdx
+				editProps.bIdx = action.payload.bIdx
+				editProps.vertical = action.payload.vertical
 			}
-			return { ...state, editIndices }
+			return { ...state, editProps }
 		case 'RESIZE_BLOCK': {
 			return {
 				...state, groups: state.groups.map((group, i) => {
-					if(i !== state.editIndices.gIdx) return group
+					if(i !== state.editProps.gIdx) return group
 					switch(group.type) {
 						case '+': {
 							const blocks = group.blocks.map((block, j) => {
-								if(j !== state.editIndices.bIdx) return block
+								if(j !== state.editProps.bIdx) return block
 								const xDist = Math.abs(action.payload.x - block.x)
 								const x2Dist = Math.abs(action.payload.x - block.x2)
 								if(xDist > x2Dist) {
@@ -107,64 +111,106 @@ export default (state = initialState.canvas, action) => {
 							return newGroup(group, blocks)
 						}
 						case 'x': {
-							const block = group.blocks[state.editIndices.bIdx]
-							const xDist = Math.abs(action.payload.x - block.x)
-							const x2Dist = Math.abs(action.payload.x - block.x2)
-							const {y, yCoord, height, fill} = block
-							let {x, xCoord, x2Coord, x2, width} = block
-							if(xDist > x2Dist) {
-								x2Coord = Math.ceil(action.payload.x / window.delta)
-								x2 = x2Coord * window.delta
-								width = x2 - block.x
+							const block = group.blocks[state.editProps.bIdx]
+							if(state.editProps.vertical) {
+								const yDist = action.payload.y - block.y
+								const {x, xCoord, x2Coord, x2, width, height, y, yCoord, fill} = block
+								const count = Math.max(2, Math.floor(yDist / window.delta))
+								const w = Math.floor(x2Coord - xCoord)
+								const type = group.type
+								const total = count * w
+								const math = `${w} ${type} ${count}`
+								const blocks = [...Array(count)].map((b,i) => ({
+									x, xCoord, x2, x2Coord, width, fill, height,
+									y: y + (i * window.delta),
+									yCoord: yCoord + i
+								}))
+								return {
+									x, xCoord, x2, x2Coord, y, yCoord, width,
+									blocks, total, type, math,
+									height: height * count
+								}
 							} else {
-								xCoord = Math.floor(action.payload.x / window.delta)
-								x = xCoord * window.delta
-								width = block.x2 - x
-							}
-							const type = group.type
-							const w = Math.floor(x2Coord - xCoord)
-							const count = group.blocks.length
-							const total = count * w
-							const math = `${w} ${type} ${count}`
-							const blocks = [...Array(count)].map((b,i) => ({
-								x, xCoord, x2, x2Coord, width, fill, height,
-								y: y + (i * window.delta),
-								yCoord: yCoord + i
-							}))
-							return {
-								x, xCoord, x2, x2Coord, y, yCoord, width,
-								blocks, total, type, math,
-								height: height * count
+								const xDist = Math.abs(action.payload.x - block.x)
+								const x2Dist = Math.abs(action.payload.x - block.x2)
+								const {y, yCoord, height, fill} = block
+								let {x, xCoord, x2Coord, x2, width} = block
+								if(xDist > x2Dist) {
+									x2Coord = Math.ceil(action.payload.x / window.delta)
+									x2 = x2Coord * window.delta
+									width = x2 - block.x
+								} else {
+									xCoord = Math.floor(action.payload.x / window.delta)
+									x = xCoord * window.delta
+									width = block.x2 - x
+								}
+								const type = group.type
+								const w = Math.floor(x2Coord - xCoord)
+								const count = group.blocks.length
+								const total = count * w
+								const math = `${w} ${type} ${count}`
+								const blocks = [...Array(count)].map((b,i) => ({
+									x, xCoord, x2, x2Coord, width, fill, height,
+									y: y + (i * window.delta),
+									yCoord: yCoord + i
+								}))
+								return {
+									x, xCoord, x2, x2Coord, y, yCoord, width,
+									blocks, total, type, math,
+									height: height * count
+								}
 							}
 						}
 						case '2': {
-							const block = group.blocks[state.editIndices.bIdx]
-							const xDist = Math.abs(action.payload.x - block.x)
-							const x2Dist = Math.abs(action.payload.x - block.x2)
-							const {y, yCoord, height, fill} = block
-							let {x, xCoord, x2Coord, x2, width} = block
-							if(xDist > x2Dist) {
-								x2Coord = Math.ceil(action.payload.x / window.delta)
-								x2 = x2Coord * window.delta
-								width = x2 - block.x
+							const block = group.blocks[state.editProps.bIdx]
+							if(state.editProps.vertical) {
+								const yDist = action.payload.y - block.y
+								const {x, xCoord, height, y, yCoord, fill} = block
+								const count = Math.max(2, Math.floor(yDist / window.delta))
+								const x2Coord = xCoord + count
+								const x2 = x2Coord * window.delta
+								const width = x2 - x
+								const type = group.type
+								const total = count * count
+								const math = `${count} ^ ${type}`
+								const blocks = [...Array(count)].map((b,i) => ({
+									x, xCoord, x2, x2Coord, width, fill, height,
+									y: y + (i * window.delta),
+									yCoord: yCoord + i
+								}))
+								return {
+									x, xCoord, x2, x2Coord, y, yCoord, width,
+									blocks, total, type, math,
+									height: height * count
+								}
 							} else {
-								xCoord = Math.floor(action.payload.x / window.delta)
-								x = xCoord * window.delta
-								width = block.x2 - x
-							}
-							const type = group.type
-							const count = Math.floor(x2Coord - xCoord)
-							const total = count * count
-							const math = `${count} ^ ${count}`
-							const blocks = [...Array(count)].map((b,i) => ({
-								x, xCoord, x2, x2Coord, width, fill, height,
-								y: y + (i * window.delta),
-								yCoord: yCoord + i
-							}))
-							return {
-								x, xCoord, x2, x2Coord, y, yCoord, width,
-								blocks, total, type, math,
-								height: height * count
+								const xDist = Math.abs(action.payload.x - block.x)
+								const x2Dist = Math.abs(action.payload.x - block.x2)
+								const {y, yCoord, height, fill} = block
+								let {x, xCoord, x2Coord, x2, width} = block
+								if(xDist > x2Dist) {
+									x2Coord = Math.ceil(action.payload.x / window.delta)
+									x2 = x2Coord * window.delta
+									width = x2 - block.x
+								} else {
+									xCoord = Math.floor(action.payload.x / window.delta)
+									x = xCoord * window.delta
+									width = block.x2 - x
+								}
+								const type = group.type
+								const count = Math.floor(x2Coord - xCoord)
+								const total = count * count
+								const math = `${count} ^ ${type}`
+								const blocks = [...Array(count)].map((b,i) => ({
+									x, xCoord, x2, x2Coord, width, fill, height,
+									y: y + (i * window.delta),
+									yCoord: yCoord + i
+								}))
+								return {
+									x, xCoord, x2, x2Coord, y, yCoord, width,
+									blocks, total, type, math,
+									height: height * count
+								}
 							}
 						}
 						default:
@@ -207,7 +253,8 @@ export default (state = initialState.canvas, action) => {
 					}
 
 					const blocks = [...Array(count)].map((b,i) => ({
-						x, xCoord, x2, x2Coord, width, fill, height,
+						x, xCoord, x2, x2Coord, width, height,
+						fill: type === '+' ? getRandomColor() : fill,
 						y: y + (i * window.delta),
 						yCoord: yCoord + i
 					}))
