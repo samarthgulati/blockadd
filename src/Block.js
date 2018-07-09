@@ -15,14 +15,14 @@ export default function Block(props) {
         fill={props.fill}/>
       ))}
       <VPill strokeWidth={8}/>
-      <use href="#vpill"
+      <use xlinkHref="#vpill"
           className="ew-resize" 
           onMouseDown={e => props.toggleEdit(e, props.gIdx, props.bIdx)}
           x={props.x - props.height * 0.25} 
           y={props.y + props.height * 0.125} 
           width={props.height * 0.5} 
           height={props.height * 0.75}/>
-      <use href="#vpill"
+      <use xlinkHref="#vpill"
           className="ew-resize" 
           onMouseDown={e => props.toggleEdit(e, props.gIdx, props.bIdx)}
           x={props.x + props.width - props.height * 0.25} 

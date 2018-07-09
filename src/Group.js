@@ -35,7 +35,7 @@ export default function Group(props) {
       fill={block.fill}/>)
     )}
     <HPill strokeWidth={8}/>
-    <use href="#hpill"
+    <use xlinkHref="#hpill"
         style={{display: props.type === '+' ? 'none' : 'initial'}}
         className="ns-resize" 
         onMouseDown={e => props.toggleEdit(e, props.gIdx, 0, true)}
