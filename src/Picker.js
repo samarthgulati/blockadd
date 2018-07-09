@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Label from './Label'
 import Button from './Button'
 export default class Picker extends Component {
   constructor(props) {
@@ -27,16 +28,11 @@ export default class Picker extends Component {
       onMouseDown={e => e.stopPropagation()}
       onClick={this.toggleOpen}
     />
-    <text 
-      textAnchor="middle"
-      alignmentBaseline="middle"
-      style={{fontSize:window.delta}}
-      onMouseDown={e => e.stopPropagation()}
-      onClick={this.toggleOpen}
-      x={this.props.x - window.delta * 0.5}
-      y={this.props.y - window.delta * 0.5}>
-        {this.props.value}
-    </text>
+    <Label 
+      toggleOpen={this.toggleOpen}
+      x={this.props.x}
+      y={this.props.y}
+      value={this.props.value}/>
     <g style={{display:this.state.open?'initial':'none'}}>
     {this.props.enum.map((e,i)=>{
       const height = window.delta
